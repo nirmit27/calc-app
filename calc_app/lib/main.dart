@@ -1,6 +1,7 @@
 import 'package:calc_app/button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,12 +36,11 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<String> ops = [
     '=',
     '/',
-    '*',
+    'x',
     '-',
     '+',
     '%',
   ];
-
   final List<String> buttons = [
     'C',
     'DEL',
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
     '9',
     '8',
     '7',
-    '*',
+    'x',
     '4',
     '5',
     '6',
@@ -64,8 +64,9 @@ class _MyHomePageState extends State<MyHomePage> {
     '='
   ];
 
-  final userqn = '';
-  final userans = '';
+  var userqn = '';
+  var userans = '';
+  var plusminus = true;
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text(
                   userqn,
                   style: const TextStyle(
+                    color: Colors.black54,
                     fontSize: 20,
                   ),
                 ),
@@ -96,7 +98,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text(
                   userans,
                   style: const TextStyle(
-                    fontSize: 30,
+                    fontSize: 50,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -112,26 +116,79 @@ class _MyHomePageState extends State<MyHomePage> {
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4),
                 itemBuilder: (BuildContext context, int index) {
+                  // Clear Button
                   if (index == 0) {
                     return MyButton(
-                        txtcolor: Colors.white,
-                        btntxt: buttons[index],
-                        btncolor: Colors.green);
+                      btntapped: () {
+                        setState(() {
+                          userqn = '';
+                          userans = '';
+                        });
+                      },
+                      txtcolor: Colors.white,
+                      btntxt: buttons[index],
+                      btncolor: Colors.green,
+                    );
                   }
+                  // Delete Button
                   if (index == 1) {
                     return MyButton(
-                        txtcolor: Colors.white,
-                        btntxt: buttons[index],
-                        btncolor: Colors.red);
-                  }
-                  return MyButton(
-                      txtcolor: isOp(buttons[index])
-                          ? Colors.white
-                          : Colors.deepPurple,
+                      btntapped: () {
+                        setState(() {
+                          if (userqn.isNotEmpty) {
+                            userqn = userqn.substring(0, (userqn.length - 1));
+                          } else {
+                            userqn = userqn;
+                          }
+                        });
+                      },
+                      txtcolor: Colors.white,
                       btntxt: buttons[index],
-                      btncolor: isOp(buttons[index])
-                          ? Colors.deepPurple
-                          : Colors.white);
+                      btncolor: Colors.red,
+                    );
+                  }
+                  // Positive/Negative
+                  if (index == (buttons.length - 4)) {
+                    return MyButton(
+                      btntapped: () {
+                        if (userqn.isEmpty ||
+                            ops.contains(userqn[userqn.length - 1])) {
+                          setState(() {
+                            userqn += '-';
+                          });
+                        }
+                      },
+                      txtcolor: Colors.white,
+                      btntxt: buttons[index],
+                      btncolor: Colors.deepPurple,
+                    );
+                  }
+                  // Equal/Evalute
+                  if (index == buttons.length - 1) {
+                    return MyButton(
+                      btntapped: () {
+                        setState(() {
+                          evaluate();
+                        });
+                      },
+                      txtcolor: Colors.white,
+                      btntxt: buttons[index],
+                      btncolor: Colors.deepPurple,
+                    );
+                  }
+                  // Remaining Buttons
+                  return MyButton(
+                    btntapped: () {
+                      setState(() {
+                        userqn += buttons[index];
+                      });
+                    },
+                    txtcolor:
+                        isOp(buttons[index]) ? Colors.white : Colors.deepPurple,
+                    btntxt: buttons[index],
+                    btncolor:
+                        isOp(buttons[index]) ? Colors.deepPurple : Colors.white,
+                  );
                 }),
           ),
           // child: ,
@@ -145,6 +202,31 @@ class _MyHomePageState extends State<MyHomePage> {
       return true;
     } else {
       return false;
+    }
+  }
+
+  // Math Expression Parser and Logic
+  void evaluate() {
+    bool flag = false;
+
+    String finalUserQn = userqn;
+    finalUserQn = finalUserQn.replaceAll('x', '*');
+
+    // Checking for type
+    if (finalUserQn.contains('.')) {
+      flag = true;
+    }
+
+    Parser p = Parser();
+    Expression exp = p.parse(finalUserQn);
+    ContextModel cm = ContextModel();
+
+    double eval = exp.evaluate(EvaluationType.REAL, cm);
+
+    if (flag) {
+      userans = eval.toStringAsFixed(6);
+    } else {
+      userans = eval.toStringAsFixed(0);
     }
   }
 }
