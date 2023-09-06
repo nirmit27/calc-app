@@ -205,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // Math Expression Parser and Logic
+  // Math Expression Parser
   void evaluate() {
     bool flag = false;
 
