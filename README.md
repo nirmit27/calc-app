@@ -7,7 +7,7 @@ A Calculator app built using Flutter.
 - Basic arithmetic operations: addition, subtraction, multiplication, and division.
 - Clear button for resetting calculations.
 - Support for decimal numbers.
-- 
+
 ## Getting Started
 
 1. Make sure you have Flutter installed. If not, follow the official [Flutter installation guide](https://flutter.dev/docs/get-started/install).
