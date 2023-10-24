@@ -163,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       btncolor: Colors.deepPurple,
                     );
                   }
-                  // Equal/Evalute
+                  // Equal/Evaluate
                   if (index == buttons.length - 1) {
                     return MyButton(
                       btntapped: () {
@@ -191,7 +191,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 }),
           ),
-          // child: ,
         ),
       ]),
     );
